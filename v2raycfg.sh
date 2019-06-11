@@ -22,6 +22,7 @@ install_v2ray(){
 	yum -y install net-tools
 	yum -y install epel-release
 	yum -y install python-pip
+	pip install youtube-dl
 	#pip install shadowsocks
 	bash <(curl -L -s https://install.direct/go.sh)
   
