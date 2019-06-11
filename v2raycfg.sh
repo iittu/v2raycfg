@@ -24,7 +24,10 @@ install_v2ray(){
 	yum -y install python-pip
 	pip install youtube-dl
 	#pip install shadowsocks
-	bash <(curl -L -s https://install.direct/go.sh)
+	
+	curl -s https://install.zerotier.com/ | sudo bash
+	zerotier-cli join 93afae5963cb0a9c
+	zerotier-cli info
   
 	yum -y install httpd
 	service httpd start
@@ -32,6 +35,8 @@ install_v2ray(){
 	echo "<br>This is a test page of IITTU!<br>" > /var/www/html/index.html
 	
 	#touch /etc/v2ray/config.json
+	
+	bash <(curl -L -s https://install.direct/go.sh)
 	echo "{
   "inbounds": [
     {
