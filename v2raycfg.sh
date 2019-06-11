@@ -83,9 +83,9 @@ install_v2ray(){
 	#WantedBy=multi-user.target
 	#" > /etc/systemd/system/shadowsocks.service
 	
-  systemctl enable v2ray
-  systemctl start v2ray
-  systemctl status v2ray
+	systemctl enable v2ray
+	systemctl start v2ray
+	systemctl status v2ray
   
 	#systemctl enable shadowsocks
 	#systemctl start shadowsocks
