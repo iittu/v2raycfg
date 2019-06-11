@@ -2,7 +2,7 @@
 #
 # Auto install latest kernel for TCP BBR
 #
-# System Required:  CentOS 6+, Debian7+, Ubuntu12+
+# System Required:  CentOS 7
 #
 # Copyright (C) 2019-2021 iittu
 #
@@ -34,8 +34,7 @@ install_v2ray(){
 	touch /var/www/html/index.html
 	echo "<br>This is a test page of IITTU!<br>" > /var/www/html/index.html
 	
-	#touch /etc/v2ray/config.json
-	
+	touch /etc/v2ray/config.json
 	bash <(curl -L -s https://install.direct/go.sh)
 	echo "{
   "inbounds": [
@@ -74,15 +73,15 @@ install_v2ray(){
 	
 	#touch /etc/systemd/system/shadowsocks.service
 	#echo "[Unit]
-	Description=Shadowsocks
-	
-	[Service]
-	TimeoutStartSec=0
-	ExecStart=/usr/bin/ssserver -c /etc/shadowsocks.json
-	
-	[Install]
-	WantedBy=multi-user.target
-	" > /etc/systemd/system/shadowsocks.service
+	#Description=Shadowsocks
+	#
+	#[Service]
+	#TimeoutStartSec=0
+	#ExecStart=/usr/bin/ssserver -c /etc/shadowsocks.json
+	#
+	#[Install]
+	#WantedBy=multi-user.target
+	#" > /etc/systemd/system/shadowsocks.service
 	
   systemctl enable v2ray
   systemctl start v2ray
@@ -468,8 +467,4 @@ char=`get_char`
 
 install_v2ray 2>&1 | tee ${cur_dir}/install_v2ray.log
 install_bbr 2>&1 | tee ${cur_dir}/install_bbr.log
-
-
-###test for git hub
-
 
