@@ -6,7 +6,7 @@
 #
 # Copyright (C) 2019-2021 iittu
 #
-# Url: https://raw.githubusercontent.com/iittu/vpscfg/master/vpscfg.sh
+# Url: https://raw.githubusercontent.com/iittu/v2raycfg/master/v2raycfg.sh
 #
 
 red='\033[0;31m'
