@@ -515,6 +515,8 @@ echo
 echo "Press any key to start...or Press Ctrl+C to cancel. VPS will be reboot after this!!!"
 char=`get_char`
 
+#common_init
 install_v2ray 2>&1 | tee ${cur_dir}/install_v2ray.log
+#install_zt
 install_bbr 2>&1 | tee ${cur_dir}/install_bbr.log
 
