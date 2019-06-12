@@ -61,7 +61,7 @@ install_ss(){
 	yum -y install epel-release
 	yum -y install python-pip
 	pip install shadowsocks
-	echo "{
+	echo '{
         "server":"0.0.0.0",
         "local_address":"127.0.0.1",
         "local_port":1080,
@@ -81,7 +81,7 @@ install_ss(){
         "method":"aes-256-cfb",
         "fast_open": false
 }
-" > /etc/shadowsocks.json
+' > /etc/shadowsocks.json
 
 	echo "[Unit]
 	Description=shadowsocks
