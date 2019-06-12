@@ -16,25 +16,101 @@ plain='\033[0m'
 
 cur_dir=$(pwd)
 
-install_v2ray(){
-	systemctl stop firewalld
-	
+
+[[ $EUID -ne 0 ]] && echo -e "${red}Error:${plain} This script must be run as root!" && exit 1
+
+[[ -d "/proc/vz" ]] && echo -e "${red}Error:${plain} Your VPS is based on OpenVZ, which is not supported." && exit 1
+
+if [ -f /etc/redhat-release ]; then
+    release="centos"
+elif cat /etc/issue | grep -Eqi "debian"; then
+    release="debian"
+elif cat /etc/issue | grep -Eqi "ubuntu"; then
+    release="ubuntu"
+elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
+    release="centos"
+elif cat /proc/version | grep -Eqi "debian"; then
+    release="debian"
+elif cat /proc/version | grep -Eqi "ubuntu"; then
+    release="ubuntu"
+elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
+    release="centos"
+else
+    release=""
+fi
+
+#################################################
+
+common_init(){
 	yum -y install net-tools
+	
 	yum -y install epel-release
 	yum -y install python-pip
 	pip install youtube-dl
-	#pip install shadowsocks
 	
-	curl -s https://install.zerotier.com/ | sudo bash
-	zerotier-cli join 93afae5963cb0a9c
-	zerotier-cli info
-  
 	yum -y install httpd
 	service httpd start
 	touch /var/www/html/index.html
 	echo "<br>This is a test page of IITTU!<br>" > /var/www/html/index.html
 	
-	#touch /etc/v2ray/config.json
+}
+
+install_ss(){
+	systemctl stop firewalld
+	
+	yum -y install epel-release
+	yum -y install python-pip
+	pip install shadowsocks
+	echo "{
+        "server":"0.0.0.0",
+        "local_address":"127.0.0.1",
+        "local_port":1080,
+        "port_password":{
+        "8999":"iittu",
+        "9991":"iittu1",
+        "9992":"iittu2",
+        "9993":"iittu3",
+        "9994":"iittu4",
+        "9995":"iittu5",
+        "9996":"iittu6",
+        "9997":"iittu7",
+        "9998":"iittu8",
+        "9999":"iittu9"
+        },
+        "timeout":300,
+        "method":"aes-256-cfb",
+        "fast_open": false
+}
+" > /etc/shadowsocks.json
+
+	echo "[Unit]
+	Description=shadowsocks
+	
+	[Service]
+	TimeoutStartSec=0
+	ExecStart=/usr/bin/ssserver -c /etc/shadowsocks.json
+	
+	[Install]
+	WantedBy=multi-user.target
+	" > /etc/systemd/system/shadowsocks.service
+	systemctl enable shadowsocks
+	systemctl stop shadowsocks
+	systemctl start shadowsocks
+	systemctl status shadowsocks
+	#nohup ssserver -c /etc/shadowsocks.json &
+
+
+}
+
+install_zt(){
+	curl -s https://install.zerotier.com/ | sudo bash
+	zerotier-cli join 93afae5963cb0a9c
+	zerotier-cli info
+}
+
+install_v2ray(){
+	systemctl stop firewalld
+	
 	uuid=$(cat /proc/sys/kernel/random/uuid)
 	port_num=$(shuf -i 10001-60000 -n 1)
 	bash <(curl -L -s https://install.direct/go.sh)
@@ -72,6 +148,11 @@ install_v2ray(){
   ]
 }
 ' > /etc/v2ray/config.json
+	
+	systemctl stop v2ray
+	systemctl enable v2ray
+	systemctl start v2ray
+	systemctl status v2ray  
 
 	echo "PortNumber: $port_num
 Protocol: vmess
@@ -79,55 +160,11 @@ UUID: $uuid
 Network: mkcp
 AlterID: 64
 Type: srtp
-" > device.cfg.out
-	
-	#touch /etc/systemd/system/shadowsocks.service
-	#echo "[Unit]
-	#Description=Shadowsocks
-	#
-	#[Service]
-	#TimeoutStartSec=0
-	#ExecStart=/usr/bin/ssserver -c /etc/shadowsocks.json
-	#
-	#[Install]
-	#WantedBy=multi-user.target
-	#" > /etc/systemd/system/shadowsocks.service
-	
-	systemctl stop v2ray
-	systemctl enable v2ray
-	systemctl start v2ray
-	systemctl status v2ray
-  
-	#systemctl enable shadowsocks
-	#systemctl start shadowsocks
-	#systemctl status shadowsocks
-	#nohup ssserver -c /etc/shadowsocks.json &
-  
+" > device.cfg
+
 }
 
-
-
-[[ $EUID -ne 0 ]] && echo -e "${red}Error:${plain} This script must be run as root!" && exit 1
-
-[[ -d "/proc/vz" ]] && echo -e "${red}Error:${plain} Your VPS is based on OpenVZ, which is not supported." && exit 1
-
-if [ -f /etc/redhat-release ]; then
-    release="centos"
-elif cat /etc/issue | grep -Eqi "debian"; then
-    release="debian"
-elif cat /etc/issue | grep -Eqi "ubuntu"; then
-    release="ubuntu"
-elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
-    release="centos"
-elif cat /proc/version | grep -Eqi "debian"; then
-    release="debian"
-elif cat /proc/version | grep -Eqi "ubuntu"; then
-    release="ubuntu"
-elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
-    release="centos"
-else
-    release=""
-fi
+#################################################
 
 is_digit(){
     local input=${1}
