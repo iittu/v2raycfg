@@ -111,6 +111,7 @@ install_zt(){
 install_v2ray(){
 	systemctl stop firewalld
 	
+	ipaddr=$(ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6 | awk '{print $2}' | tr -d "addr:")
 	uuid=$(cat /proc/sys/kernel/random/uuid)
 	port_num=$(shuf -i 10001-60000 -n 1)
 	bash <(curl -L -s https://install.direct/go.sh)
@@ -154,7 +155,8 @@ install_v2ray(){
 	systemctl start v2ray
 	systemctl status v2ray  
 
-	echo "PortNumber: $port_num
+	echo "IP: $ipaddr
+PortNumber: $port_num
 Protocol: vmess
 UUID: $uuid
 Network: mkcp
@@ -506,7 +508,7 @@ echo " Arch    : $arch ($lbit Bit)"
 echo " Kernel  : $kern"
 echo "----------------------------------------"
 echo " Auto install latest kernel for TCP BBR"
-echo
+echo "    ONLY CAN BE USED ON CENTOS 6+ !!!   "
 echo "                 IITTU"
 echo "----------------------------------------"
 echo
