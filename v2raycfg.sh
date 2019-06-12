@@ -34,17 +34,19 @@ install_v2ray(){
 	touch /var/www/html/index.html
 	echo "<br>This is a test page of IITTU!<br>" > /var/www/html/index.html
 	
-	touch /etc/v2ray/config.json
+	#touch /etc/v2ray/config.json
+	uuid=$(cat /proc/sys/kernel/random/uuid)
+	port_num=$(shuf -i 10001-60000 -n 1)
 	bash <(curl -L -s https://install.direct/go.sh)
-	echo "{
+	echo '{
   "inbounds": [
     {
-      "port": 16823,
+      "port": '"$port_num"',
       "protocol": "vmess",
       "settings": {
         "clients": [
           {
-            "id": "27523a96-5a87-4406-95e4-a58bd812b894",
+            "id": "'$uuid'",
             "alterId": 64
           }
         ]
@@ -69,7 +71,15 @@ install_v2ray(){
     }
   ]
 }
-" > /etc/v2ray/config.json
+' > /etc/v2ray/config.json
+
+	echo "PortNumber: $port_num
+Protocol: vmess
+UUID: $uuid
+Network: mkcp
+AlterID: 64
+Type: srtp
+" > device.cfg.out
 	
 	#touch /etc/systemd/system/shadowsocks.service
 	#echo "[Unit]
@@ -83,6 +93,7 @@ install_v2ray(){
 	#WantedBy=multi-user.target
 	#" > /etc/systemd/system/shadowsocks.service
 	
+	systemctl stop v2ray
 	systemctl enable v2ray
 	systemctl start v2ray
 	systemctl status v2ray
