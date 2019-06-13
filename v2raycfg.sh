@@ -526,6 +526,7 @@ echo "VPS will be reboot after this!!!"
     done
         clear
         echo "Prepare to take off !!!"
+	echo
 	sleep 2
 
 #common_init
